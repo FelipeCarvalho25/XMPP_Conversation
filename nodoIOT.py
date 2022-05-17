@@ -8,16 +8,18 @@ logger = logging.getLogger(__name__)
 
 
 class NodoBot(ClientXMPP):
-    def __int__(self, jId, password):
+
+    def __init__(self, jId, password):
         ClientXMPP.__init__(self, jId, password)
 
-        self.add_event_handler("session_start", self)
-        self.add_event_handler("message"),
+        self.add_event_handler("session_start", self.start)
+        self.add_event_handler("message", self.message)
 
-    def session_start(self):
+    async def start(self, event):
         print("[-] Sessão iniciada.")
         self.send_presence()
-        self.get_roster()
+        await self.get_roster()
+        
 
     def message(self, msg):
         print("[\] mensagem", msg["body"], " por ", msg["from"])
@@ -30,6 +32,11 @@ if __name__ == '__main__':
     formatter = "%(levelname)-8s %(message)s"
     logging.basicConfig(level=logging.DEBUG, format=formatter)
     CONFIG = json.loads(open(CURRENTDIR + "/data/config.json").read())
-    xmpp = NodoBot(CONFIG['username'], CONFIG['password'])
+    xmpp = NodoBot("testeiot2@jabber.de", "b4t4t1nh4123")
+    xmpp.register_plugin('xep_0030') # Service Discovery
+    xmpp.register_plugin('xep_0004') # Service Discovery
+    xmpp.register_plugin('xep_0060') # Service Discovery
+    xmpp.register_plugin('xep_0199') # XMPP Ping
+
     xmpp.connect()
-    xmpp.process()
+    xmpp.process(forever=True)

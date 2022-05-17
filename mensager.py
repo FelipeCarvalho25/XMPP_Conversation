@@ -7,43 +7,37 @@ from slixmpp import ClientXMPP
 logger = logging.getLogger(__name__)
 
 
-class SendMsgBot(ClientXMPP):
+class SendMsgIot(ClientXMPP):
 
-    def __init__(self, jid, password, recipient, message):
+    def __init__(self, jid, password):
         ClientXMPP.__init__(self, jid, password)
 
-        self.recipient = recipient
-        self.msg = message
+        self.recipient = None
+        self.msg = None
+        self.mensagem_chegou = None
 
         self.add_event_handler("session_start", self.start)
+        self.add_event_handler("message", self.message)
 
     async def start(self, event):
 
         self.send_presence()
         await self.get_roster()
 
+        
+    def send_msg(self, recipient, message):
+        self.recipient = recipient
+        self.msg = message
         self.send_message(mto=self.recipient,
                           mbody=self.msg,
                           mtype='chat')
 
-        self.disconnect()
 
+    def message(self, msg):
+        print("[\] mensagem", msg["body"], " por ", msg["from"])
+        if msg["type"] in ("chat", "normal"):
+            self.mensagem_chego = msg["body"]
 
-if __name__ == '__main__':
+    def getMensage(self):
+        return self.mensagem_chegou
 
-
-    jid = input("Username: ")
-    password = getpass("Password: ")
-    to = input("Send To: ")
-    message = input("Message: ")
-    print("Teste")
-    # Setup the EchoBot and register plugins. Note that while plugins may
-    # have interdependencies, the order in which you register them does
-    # not matter.
-    xmpp = SendMsgBot(jid, password, to, message)
-    xmpp.register_plugin('xep_0030') # Service Discovery
-    xmpp.register_plugin('xep_0199') # XMPP Ping
-
-    # Connect to the XMPP server and start processing XMPP stanzas.
-    xmpp.connect()
-    xmpp.process(forever=False)
