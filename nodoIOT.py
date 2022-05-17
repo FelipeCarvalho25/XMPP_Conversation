@@ -38,8 +38,10 @@ if __name__ == '__main__':
 
     formatter = "%(levelname)-8s %(message)s"
     logging.basicConfig(level=logging.DEBUG, format=formatter)
-    CONFIG = json.loads(open(CURRENTDIR + "/data/config.json").read())
-    xmpp = NodoBot("testeiot2@jabber.de", "b4t4t1nh4123")
+    CONFIG = json.loads(open(CURRENTDIR + "/data/config2.json").read())
+    jid = CONFIG["username"]
+    password = CONFIG["password"]
+    xmpp = NodoBot(jid, password)
     xmpp.register_plugin('xep_0030') # Service Discovery
     xmpp.register_plugin('xep_0004') # Service Discovery
     xmpp.register_plugin('xep_0060') # Service Discovery

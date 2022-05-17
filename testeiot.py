@@ -9,7 +9,7 @@
 
 
 import logging
-
+import asyncio, json, os, sys, inspect
 from os.path import basename, join as pjoin
 from argparse import ArgumentParser
 
@@ -19,6 +19,7 @@ import slixmpp
 from slixmpp.plugins.xep_0323.device import Device
 
 #from slixmpp.exceptions import IqError, IqTimeout
+CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 class IoT_TestDevice(slixmpp.ClientXMPP):
 
@@ -73,20 +74,22 @@ class IoT_TestDevice(slixmpp.ClientXMPP):
         ip = "179.127.188.19"
         if msg['type'] in ('chat', 'normal'):
             #logging.debug("got normal chat message" + str(msg))
-            if msg['body'] in ("Olá", "Oi", "Alguém ai?", "Opa", "Oie", "Oii", "Boa noite", "Bom dia", "Boa tarde", "E ai"):
-                msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'exucutar'").send()
-            if msg['body'] in ("comando", "execute"):
-                msg.reply("comando " + msg["body"].replace("comando", "") +" executado com sucesso").send()
-            elif msg['body'] in ("desligar"):
+            if  "Olá"in msg['body'] or "Oi" in msg['body'] or "Alguém ai?" in msg['body'] or "Opa" in msg['body'] or "Boa noite" in msg['body'] or  "Bom dia" in msg['body'] or  "Boa tarde" in msg['body'] or "E ai" in msg['body']:
+                msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'executar'").send()
+            elif "comando" in msg['body'] or "execute" in msg['body'] :
+                msg.reply("comando " + msg["body"].replace("comando", "").replace("executar", "") +" executado com sucesso").send()
+                if "temperatura" in msg['body'] or "dado" in msg['body'] :
+                    msg.reply("a última temperatura medida foi de 18ºC").send()
+            elif "desligar" in msg['body']:
                 msg.reply("Desligando...").send()
                 self.disconnect()
-            elif msg['body'] in ("retorne", "medição", "temperatura"):
+            elif "temperatura" in msg['body'] or "dado" in msg['body'] or "medição" in msg['body'] or "retorne" in msg['body'] :
                 msg.reply("a última temperatura medida foi de 18ºC").send()
             else:
-                msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'exucutar'").send()
+                msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'executar'").send()
 
         else:
-            msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'exucutar'").send()
+            msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'executar'").send()
 
 class TheDevice(Device):
     """
@@ -145,8 +148,9 @@ if __name__ == '__main__':
     formatter = "%(levelname)-8s %(message)s"
     logging.basicConfig(level=logging.DEBUG, format=formatter)
 
-    jid = "testeiot2@jabber.de"#input("Username: ")
-    password = "b4t4t1nh4123"#getpass("Password: ")
+    CONFIG = json.loads(open(CURRENTDIR + "/data/config2.json").read())
+    jid = CONFIG["username"]
+    password = CONFIG["password"]
     nodeid = "TesteId"
     sensorjid = None
 

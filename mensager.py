@@ -38,9 +38,9 @@ class SendMsgBot(ClientXMPP):
 
 
 if __name__ == '__main__':
-    CONFIG = json.loads(open(CURRENTDIR + "/data/config.json").read())
-    jid = CONFIG[1]
-    password = CONFIG[2]
+    CONFIG = json.loads(open(CURRENTDIR + "/data/config2.json").read())
+    jid = CONFIG["username"]
+    password = CONFIG["password"]
     to = input("Send To: ")
     message = input("Message: ")
     # Setup the EchoBot and register plugins. Note that while plugins may
