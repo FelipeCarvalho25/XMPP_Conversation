@@ -1,3 +1,11 @@
+#adaptado de
+
+# Slixmpp: The Slick XMPP Library
+# Copyright (C) 2010  Nathanael C. Fritz
+# This file is part of Slixmpp.
+# See the file LICENSE for copying permission
+
+
 import asyncio, logging, json, os, sys, inspect
 
 from slixmpp import ClientXMPP

@@ -1,3 +1,13 @@
+#adapatado de :
+
+# Slixmpp: The Slick XMPP Library
+# Implementation of xeps for Internet of Things
+# http://wiki.xmpp.org/web/Tech_pages/IoT_systems
+# Copyright (C) 2013 Sustainable Innovation, Joachim.lindborg@sust.se
+# This file is part of Slixmpp.
+# See the file LICENSE for copying permission.
+
+
 import logging
 
 from os.path import basename, join as pjoin
