@@ -1,43 +1,47 @@
-import logging
-from getpass import getpass
+import asyncio, logging, json, os, sys, inspect
 
 from slixmpp import ClientXMPP
 
 
 logger = logging.getLogger(__name__)
+CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 
-class SendMsgIot(ClientXMPP):
+class SendMsgBot(ClientXMPP):
 
-    def __init__(self, jid, password):
+    def __init__(self, jid, password, recipient, message):
         ClientXMPP.__init__(self, jid, password)
 
-        self.recipient = None
-        self.msg = None
-        self.mensagem_chegou = None
+        self.recipient = recipient
+        self.msg = message
 
         self.add_event_handler("session_start", self.start)
-        self.add_event_handler("message", self.message)
 
     async def start(self, event):
 
         self.send_presence()
         await self.get_roster()
 
-        
-    def send_msg(self, recipient, message):
-        self.recipient = recipient
-        self.msg = message
         self.send_message(mto=self.recipient,
                           mbody=self.msg,
                           mtype='chat')
 
+        self.disconnect()
 
-    def message(self, msg):
-        print("[\] mensagem", msg["body"], " por ", msg["from"])
-        if msg["type"] in ("chat", "normal"):
-            self.mensagem_chego = msg["body"]
 
-    def getMensage(self):
-        return self.mensagem_chegou
+if __name__ == '__main__':
+    CONFIG = json.loads(open(CURRENTDIR + "/data/config.json").read())
+    jid = CONFIG[1]
+    password = CONFIG[2]
+    to = input("Send To: ")
+    message = input("Message: ")
+    # Setup the EchoBot and register plugins. Note that while plugins may
+    # have interdependencies, the order in which you register them does
+    # not matter.
+    xmpp = SendMsgBot(jid, password, to, message)
+    xmpp.register_plugin('xep_0030') # Service Discovery
+    xmpp.register_plugin('xep_0199') # XMPP Ping
 
+    # Connect to the XMPP server and start processing XMPP stanzas.
+    xmpp.connect()
+    xmpp.process(forever=False)

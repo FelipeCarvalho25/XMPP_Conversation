@@ -60,12 +60,23 @@ class IoT_TestDevice(slixmpp.ClientXMPP):
             session=self['xep_0323'].request_data(self.boundjid.full,self.clientJID,self.datacallback)
 
     def message(self, msg):
+        ip = "179.127.188.19"
         if msg['type'] in ('chat', 'normal'):
-            logging.debug("got normal chat message" + str(msg))
-            ip="179.127.188.19"
-            msg.reply("Hi I am " + self.boundjid.full + " and I am on IP " + ip).send()
+            #logging.debug("got normal chat message" + str(msg))
+            if msg['body'] in ("Olá", "Oi", "Alguém ai?", "Opa", "Oie", "Oii", "Boa noite", "Bom dia", "Boa tarde", "E ai"):
+                msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'exucutar'").send()
+            if msg['body'] in ("comando", "execute"):
+                msg.reply("comando " + msg["body"].replace("comando", "") +" executado com sucesso").send()
+            elif msg['body'] in ("desligar"):
+                msg.reply("Desligando...").send()
+                self.disconnect()
+            elif msg['body'] in ("retorne", "medição", "temperatura"):
+                msg.reply("a última temperatura medida foi de 18ºC").send()
+            else:
+                msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'exucutar'").send()
+
         else:
-            logging.debug("got unknown message type %s", str(msg['type']))
+            msg.reply("Olá sou um nodo IOT no ip: " + ip + ", você pode executar algum comando utilizando as palavras 'comando' e 'exucutar'").send()
 
 class TheDevice(Device):
     """
