@@ -6,6 +6,7 @@ CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 
 logger = logging.getLogger(__name__)
 
+
 class NodoBot(ClientXMPP):
     def __int__(self, jId, password):
         ClientXMPP.__init__(self, jId, password)
@@ -17,16 +18,18 @@ class NodoBot(ClientXMPP):
         print("[-] Sessão iniciada.")
         self.send_presence()
         self.get_roster()
+
     def message(self, msg):
         print("[\] mensagem", msg["body"], " por ", msg["from"])
         if msg["type"] in ("chat", "normal"):
             msg.reply("Recebi: " + msg["body"]).send()
 
-if __name__ == '__main___':
+
+if __name__ == '__main__':
+
     formatter = "%(levelname)-8s %(message)s"
     logging.basicConfig(level=logging.DEBUG, format=formatter)
-    CONFIG = json.loads(open(CURRENTDIR+"/data/config.json").read())
-    xmpp = NodoBot(CONFIG['username'],CONFIG['password'])
+    CONFIG = json.loads(open(CURRENTDIR + "/data/config.json").read())
+    xmpp = NodoBot(CONFIG['username'], CONFIG['password'])
     xmpp.connect()
     xmpp.process()
-
